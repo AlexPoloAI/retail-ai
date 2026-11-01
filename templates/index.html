@@ -1,0 +1,156 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI Product Description Generator - Module 06</title>
+    <style>
+        :root {
+            color-scheme: light;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: #1f2937;
+            background: #f4f7fb;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 32px 16px; }
+        main { max-width: 800px; margin: 0 auto; }
+        .panel {
+            background: white;
+            border: 1px solid #dce3ed;
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 28px rgb(31 41 55 / 5%);
+        }
+        h1 { margin-top: 0; font-size: 1.85rem; }
+        h2 { font-size: 1.25rem; margin-top: 0; }
+        .subtitle { color: #596579; line-height: 1.6; margin-bottom: 14px; }
+        .presets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+        .preset-link {
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1d4ed8;
+            background: #eaf1ff;
+            border: 1px solid #cbdcff;
+            padding: 6px 12px;
+            border-radius: 999px;
+        }
+        .preset-link:hover { background: #dbeafe; }
+        label { display: block; margin: 16px 0 6px; font-weight: 650; }
+        input, textarea, select, button {
+            width: 100%; font: inherit; border-radius: 8px;
+        }
+        input, textarea, select {
+            border: 1px solid #cbd5e1; padding: 11px 12px; background: #fff;
+        }
+        textarea { min-height: 105px; resize: vertical; }
+        input:focus, textarea:focus, select:focus {
+            outline: 3px solid #bfdbfe; border-color: #2563eb;
+        }
+        button {
+            margin-top: 22px; padding: 13px; border: 0;
+            background: #1d4ed8; color: white; font-weight: 700;
+            cursor: pointer;
+        }
+        button:hover { background: #1e40af; }
+        .notice { padding: 14px; border-radius: 8px; line-height: 1.5; margin-bottom: 16px; }
+        .error { color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; }
+        .result {
+            white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.75;
+            background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 10px;
+        }
+        .hint { color: #64748b; font-size: .88rem; margin-top: 6px; }
+        .badge {
+            display: inline-block; font-size: 0.8rem; font-weight: 700;
+            background: #eaf7f0; color: #19724b; padding: 4px 10px; border-radius: 999px;
+            margin-bottom: 12px;
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 0.9rem; }
+        th, td { border: 1px solid #dce3ed; padding: 8px 10px; text-align: left; }
+        th { background: #f0f4fa; }
+    </style>
+</head>
+<body>
+<main>
+    <section class="panel">
+        <h1>🛍️ AI Product Description Generator</h1>
+        <p class="subtitle">
+            ITAI-2372 Module 06: AI in Retail &amp; E-Commerce. Turn verified product facts into tailored descriptions with tone control and automated claim verification.
+        </p>
+
+        <div class="presets">
+            <span class="hint" style="margin-right: 4px;">Load sample product:</span>
+            <a class="preset-link" href="/?preset=boots">🥾 Leather Boots</a>
+            <a class="preset-link" href="/?preset=coffee">☕ Espresso Grinder</a>
+            <a class="preset-link" href="/?preset=backpack">🎒 Tech Backpack</a>
+        </div>
+
+        {% if error %}
+            <div class="notice error" role="alert">{{ error }}</div>
+        {% endif %}
+
+        <form method="post">
+            <label for="product_name">Product name</label>
+            <input id="product_name" name="product_name" type="text"
+                   maxlength="120" value="{{ form_data.product_name }}"
+                   placeholder="e.g., TrailRunner Leather Boots" required>
+
+            <label for="features">Product facts and keywords (comma-separated)</label>
+            <textarea id="features" name="features" maxlength="1500"
+                      placeholder="e.g., full-grain leather, rubber outsole, padded collar, designed for day hikes"
+                      required>{{ form_data.features }}</textarea>
+            <p class="hint">Include only factual details you can substantiate (max 1,500 chars).</p>
+
+            <label for="audience">Target audience</label>
+            <input id="audience" name="audience" type="text" maxlength="120"
+                   value="{{ form_data.audience }}"
+                   placeholder="e.g., Hikers and outdoor enthusiasts" required>
+
+            <label for="tone">Writing tone (Stretch Goal)</label>
+            <select id="tone" name="tone">
+                <option value="neutral" {% if form_data.tone == 'neutral' %}selected{% endif %}>Neutral and informative</option>
+                <option value="formal" {% if form_data.tone == 'formal' %}selected{% endif %}>Formal and professional</option>
+                <option value="casual" {% if form_data.tone == 'casual' %}selected{% endif %}>Casual and friendly</option>
+                <option value="humorous" {% if form_data.tone == 'humorous' %}selected{% endif %}>Lighthearted and humorous</option>
+                <option value="young_adults" {% if form_data.tone == 'young_adults' %}selected{% endif %}>Young adults</option>
+                <option value="professionals" {% if form_data.tone == 'professionals' %}selected{% endif %}>Professionals</option>
+            </select>
+
+            <button type="submit">Generate Description</button>
+        </form>
+    </section>
+
+    {% if description %}
+        <section class="panel" aria-labelledby="result-heading">
+            <span class="badge">Engine: {{ provider_used }}</span>
+            <h2 id="result-heading">Generated Product Description</h2>
+            <div class="result">{{ description }}</div>
+            <p class="hint">Responsible AI Notice: Review generated copy for factual accuracy before publishing to an e-commerce catalog.</p>
+
+            {% if evaluation %}
+                <h3 style="margin-top: 22px; font-size: 1.05rem;">Automated Quality &amp; Claim Verification Rubric</h3>
+                <p class="hint">
+                    Word count: <strong>{{ evaluation.word_count }} words</strong> |
+                    Verified facts used: <strong>{{ evaluation.matched_count }} / {{ evaluation.total_facts }}</strong> |
+                    Unsupported claims flagged: <strong>{{ evaluation.flagged_claims|length }}</strong>
+                </p>
+                <table>
+                    <thead>
+                        <tr><th>Evaluation Criterion</th><th>Score (1-5)</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for crit, score in evaluation.scores.items() %}
+                        <tr>
+                            <td>{{ crit }}</td>
+                            <td><strong>{{ score }} / 5</strong></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </section>
+    {% endif %}
+</main>
+</body>
+</html>
