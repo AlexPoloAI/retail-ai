@@ -1,156 +1,96 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AI Product Description Generator - Module 06</title>
-    <style>
-        :root {
-            color-scheme: light;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            color: #1f2937;
-            background: #f4f7fb;
-        }
-        * { box-sizing: border-box; }
-        body { margin: 0; padding: 32px 16px; }
-        main { max-width: 800px; margin: 0 auto; }
-        .panel {
-            background: white;
-            border: 1px solid #dce3ed;
-            border-radius: 16px;
-            padding: 28px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 28px rgb(31 41 55 / 5%);
-        }
-        h1 { margin-top: 0; font-size: 1.85rem; }
-        h2 { font-size: 1.25rem; margin-top: 0; }
-        .subtitle { color: #596579; line-height: 1.6; margin-bottom: 14px; }
-        .presets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
-        .preset-link {
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #1d4ed8;
-            background: #eaf1ff;
-            border: 1px solid #cbdcff;
-            padding: 6px 12px;
-            border-radius: 999px;
-        }
-        .preset-link:hover { background: #dbeafe; }
-        label { display: block; margin: 16px 0 6px; font-weight: 650; }
-        input, textarea, select, button {
-            width: 100%; font: inherit; border-radius: 8px;
-        }
-        input, textarea, select {
-            border: 1px solid #cbd5e1; padding: 11px 12px; background: #fff;
-        }
-        textarea { min-height: 105px; resize: vertical; }
-        input:focus, textarea:focus, select:focus {
-            outline: 3px solid #bfdbfe; border-color: #2563eb;
-        }
-        button {
-            margin-top: 22px; padding: 13px; border: 0;
-            background: #1d4ed8; color: white; font-weight: 700;
-            cursor: pointer;
-        }
-        button:hover { background: #1e40af; }
-        .notice { padding: 14px; border-radius: 8px; line-height: 1.5; margin-bottom: 16px; }
-        .error { color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; }
-        .result {
-            white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.75;
-            background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 10px;
-        }
-        .hint { color: #64748b; font-size: .88rem; margin-top: 6px; }
-        .badge {
-            display: inline-block; font-size: 0.8rem; font-weight: 700;
-            background: #eaf7f0; color: #19724b; padding: 4px 10px; border-radius: 999px;
-            margin-bottom: 12px;
-        }
-        table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 0.9rem; }
-        th, td { border: 1px solid #dce3ed; padding: 8px 10px; text-align: left; }
-        th { background: #f0f4fa; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Product Description Generator | Module 06</title>
+  <style>
+    :root {font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#1f2937;background:#f3f6fb;}
+    * {box-sizing:border-box;}
+    body {margin:0;padding:30px 16px;}
+    main {max-width:800px;margin:auto;}
+    .panel {background:#fff;border:1px solid #dee5ef;border-radius:16px;padding:28px;margin-bottom:20px;box-shadow:0 6px 24px #18263a0a;}
+    h1 {font-size:1.75rem;margin:0 0 10px;}
+    h2 {font-size:1.2rem;margin-top:0;}
+    p {line-height:1.6;}
+    .muted {color:#52617b;}
+    .presets {display:flex;gap:8px;flex-wrap:wrap;margin:18px 0;}
+    .presets a {border-radius:24px;background:#eaf0ff;color:#1747c1;padding:7px 12px;text-decoration:none;font-size:.88rem;font-weight:600;}
+    label {display:block;margin:16px 0 6px;font-weight:650;}
+    input,textarea,select,button {width:100%;font:inherit;border-radius:8px;}
+    input,textarea,select {padding:11px 12px;border:1px solid #c5d1df;background:#fff;}
+    textarea {min-height:112px;resize:vertical;}
+    input:focus,textarea:focus,select:focus {outline:3px solid #b9d5ff;}
+    button {border:0;background:#204fda;color:#fff;padding:13px;font-weight:700;cursor:pointer;margin-top:20px;}
+    button:hover {background:#173fae;}
+    .alert {background:#fff0f0;color:#8b2424;padding:14px;border:1px solid #f5bfbf;border-radius:8px;line-height:1.5;}
+    .notice {background:#eef7f1;color:#225e3b;padding:10px 12px;border-radius:8px;display:inline-block;font-size:.86rem;font-weight:600;}
+    .result {background:#f8fafc;border:1px solid #e1e7ef;border-radius:10px;padding:16px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere;}
+    .small {font-size:.88rem;color:#57657a;}
+    ul {padding-left:22px;line-height:1.6;}
+    .footer {text-align:center;color:#687790;font-size:.82rem;padding:6px 0 16px;}
+  </style>
 </head>
 <body>
 <main>
-    <section class="panel">
-        <h1>🛍️ AI Product Description Generator</h1>
-        <p class="subtitle">
-            ITAI-2372 Module 06: AI in Retail &amp; E-Commerce. Turn verified product facts into tailored descriptions with tone control and automated claim verification.
-        </p>
+  <section class="panel">
+    <h1>🛍️ AI Product Description Generator</h1>
+    <p class="muted">ITAI-2372 • Module 06: AI in Retail &amp; E-Commerce. Generate product copy with a real language model and customize it for different audiences.</p>
+    <p class="small">Configured provider: <strong>{{ selected_provider }}</strong>. This app does not silently replace LLM output with templates.</p>
+    <nav class="presets" aria-label="Sample products">
+      <a href="/?preset=boots">🥾 Leather Boots</a>
+      <a href="/?preset=coffee">☕ Espresso Grinder</a>
+      <a href="/?preset=backpack">🎒 Tech Backpack</a>
+    </nav>
 
-        <div class="presets">
-            <span class="hint" style="margin-right: 4px;">Load sample product:</span>
-            <a class="preset-link" href="/?preset=boots">🥾 Leather Boots</a>
-            <a class="preset-link" href="/?preset=coffee">☕ Espresso Grinder</a>
-            <a class="preset-link" href="/?preset=backpack">🎒 Tech Backpack</a>
-        </div>
+    {% if error %}<div class="alert" role="alert">{{ error }}</div>{% endif %}
 
-        {% if error %}
-            <div class="notice error" role="alert">{{ error }}</div>
-        {% endif %}
+    <form method="post">
+      <label for="product_name">Product name</label>
+      <input id="product_name" name="product_name" maxlength="120" required value="{{ data.product_name }}">
 
-        <form method="post">
-            <label for="product_name">Product name</label>
-            <input id="product_name" name="product_name" type="text"
-                   maxlength="120" value="{{ form_data.product_name }}"
-                   placeholder="e.g., TrailRunner Leather Boots" required>
+      <label for="keywords">Product features / keywords (comma-separated)</label>
+      <textarea id="keywords" name="keywords" maxlength="1500" required>{{ data.keywords }}</textarea>
+      <p class="small">Only enter product details you can support. Separate features with commas.</p>
 
-            <label for="features">Product facts and keywords (comma-separated)</label>
-            <textarea id="features" name="features" maxlength="1500"
-                      placeholder="e.g., full-grain leather, rubber outsole, padded collar, designed for day hikes"
-                      required>{{ form_data.features }}</textarea>
-            <p class="hint">Include only factual details you can substantiate (max 1,500 chars).</p>
+      <label for="audience">Target audience</label>
+      <input id="audience" name="audience" maxlength="120" required value="{{ data.audience }}">
 
-            <label for="audience">Target audience</label>
-            <input id="audience" name="audience" type="text" maxlength="120"
-                   value="{{ form_data.audience }}"
-                   placeholder="e.g., Hikers and outdoor enthusiasts" required>
+      <label for="tone">Writing tone (optional stretch goal)</label>
+      <select id="tone" name="tone">
+        <option value="neutral" {% if data.tone == 'neutral' %}selected{% endif %}>Neutral and informative</option>
+        <option value="formal" {% if data.tone == 'formal' %}selected{% endif %}>Formal and professional</option>
+        <option value="casual" {% if data.tone == 'casual' %}selected{% endif %}>Casual and friendly</option>
+        <option value="humorous" {% if data.tone == 'humorous' %}selected{% endif %}>Lighthearted and humorous</option>
+        <option value="young_adults" {% if data.tone == 'young_adults' %}selected{% endif %}>Young adults</option>
+        <option value="professionals" {% if data.tone == 'professionals' %}selected{% endif %}>Professionals</option>
+      </select>
+      <button type="submit">Generate Description</button>
+    </form>
+  </section>
 
-            <label for="tone">Writing tone (Stretch Goal)</label>
-            <select id="tone" name="tone">
-                <option value="neutral" {% if form_data.tone == 'neutral' %}selected{% endif %}>Neutral and informative</option>
-                <option value="formal" {% if form_data.tone == 'formal' %}selected{% endif %}>Formal and professional</option>
-                <option value="casual" {% if form_data.tone == 'casual' %}selected{% endif %}>Casual and friendly</option>
-                <option value="humorous" {% if form_data.tone == 'humorous' %}selected{% endif %}>Lighthearted and humorous</option>
-                <option value="young_adults" {% if form_data.tone == 'young_adults' %}selected{% endif %}>Young adults</option>
-                <option value="professionals" {% if form_data.tone == 'professionals' %}selected{% endif %}>Professionals</option>
-            </select>
+  {% if description %}
+  <section class="panel">
+    <span class="notice">Generated by: {{ provider_used }}</span>
+    <h2 style="margin-top:18px">Generated Product Description</h2>
+    <div class="result">{{ description }}</div>
+    <p class="small"><strong>Responsible AI:</strong> A human should confirm all product claims before publishing. LLM output is not an independently verified product record.</p>
 
-            <button type="submit">Generate Description</button>
-        </form>
-    </section>
-
-    {% if description %}
-        <section class="panel" aria-labelledby="result-heading">
-            <span class="badge">Engine: {{ provider_used }}</span>
-            <h2 id="result-heading">Generated Product Description</h2>
-            <div class="result">{{ description }}</div>
-            <p class="hint">Responsible AI Notice: Review generated copy for factual accuracy before publishing to an e-commerce catalog.</p>
-
-            {% if evaluation %}
-                <h3 style="margin-top: 22px; font-size: 1.05rem;">Automated Quality &amp; Claim Verification Rubric</h3>
-                <p class="hint">
-                    Word count: <strong>{{ evaluation.word_count }} words</strong> |
-                    Verified facts used: <strong>{{ evaluation.matched_count }} / {{ evaluation.total_facts }}</strong> |
-                    Unsupported claims flagged: <strong>{{ evaluation.flagged_claims|length }}</strong>
-                </p>
-                <table>
-                    <thead>
-                        <tr><th>Evaluation Criterion</th><th>Score (1-5)</th></tr>
-                    </thead>
-                    <tbody>
-                        {% for crit, score in evaluation.scores.items() %}
-                        <tr>
-                            <td>{{ crit }}</td>
-                            <td><strong>{{ score }} / 5</strong></td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% endif %}
-        </section>
+    {% if checks %}
+      <h2>Quick Text Checks (Not a Fact-Check)</h2>
+      <ul>
+        <li>Word count: <strong>{{ checks.word_count }}</strong></li>
+        <li>Exact feature phrases present: <strong>{{ checks.exact_matches|length }} / {{ checks.feature_total }}</strong></li>
+        <li>Potentially risky phrases from the warning list: <strong>{{ checks.suspicious|length }}</strong></li>
+      </ul>
+      {% if checks.suspicious %}
+        <p class="small">Flagged wording: {{ checks.suspicious|join(', ') }}. Review this text carefully.</p>
+      {% endif %}
+      <p class="small">Exact-match checks miss paraphrases and cannot establish factual accuracy. Check the description against the source product information manually.</p>
     {% endif %}
+  </section>
+  {% endif %}
+  <p class="footer">Educational prototype • Not intended to publish unreviewed claims</p>
 </main>
 </body>
 </html>

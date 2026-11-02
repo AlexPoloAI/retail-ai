@@ -1,55 +1,88 @@
-# AI Product Description Generator (Module 06 - AI in Retail)
+# AI Product Description Generator (Module 06 — AI in Retail)
 
-## 1. Project Report (Model Choice, Challenges, Improvements & Ethics)
+A Flask web application that uses a **real large language model (LLM)** to write an English product description from a product name, user-provided features, a target audience, and a selected writing tone. It demonstrates personalized content generation for retail and e-commerce.
 
-**Model Choice and Implementation Challenges:**
-For this project, a hybrid multi-provider architecture was implemented, supporting local LLM inference via Ollama (`gemma3`) and LM Studio (`http://127.0.0.1:11434` and `http://127.0.0.1:1234`), an optional hosted OpenAI Responses API (`gpt-4o-mini`), and a robust built-in fact-bound copywriting engine. This setup was chosen because it removes API cost barriers, keeps product data secure on the local machine, and guarantees that the Flask web application runs reliably during classroom peer review even when external servers are offline. The primary challenge encountered during implementation was preventing the generator from hallucinating unverified product claims (such as waterproof ratings or lifetime warranties) when switching between casual, humorous, and professional tones. This was resolved by separating factual product attributes from tone instructions in the prompt and implementing strict server-side input validation (`120` characters maximum for product names and `1,500` characters for features).
+## Main features
 
-**Real-World Retail Extensions and Ethical Considerations:**
-In a real-world retail environment, this application enables personalized shopping experiences by adapting a single verified product catalog record for distinct customer segments (such as young adults, outdoor hikers, or professional buyers). To extend this tool beyond the tone selection stretch goal, a programmable Claim and Quality Verification Rubric was integrated. It scores every generated description from 1 to 5 across six key criteria (Factual accuracy, Audience fit, Tone consistency, Readability, Keyword relevance, and Usefulness) and audits the text for unsupported marketing superlatives. Future extensions could connect the application directly to inventory and pricing databases via APIs. From an ethical perspective, generative AI in retail carries the risk of false advertising and deceptive urgency; therefore, e-commerce platforms must ground generation strictly in verified catalog fields and keep a human reviewer in the loop before publishing product pages.
+- Product name and comma-separated product features input
+- Personalized descriptions for a specified target audience
+- **Stretch goal:** six writing tones (neutral, formal, casual, humorous, young adults, professionals)
+- Choice of **Ollama** (default), **LM Studio**, or **OpenAI API** through `.env`
+- Input validation and readable error messages when the LLM is unavailable
+- Clear display of which model actually generated the result
+- Basic word/phrase checks labeled as **heuristics, not factual verification**
+- Three sample products for repeatable experiments
 
----
+**Important:** This app does not generate a substitute template description when the LLM is unavailable. If the model/server is not running, a visible error will be shown instead. GitHub hosts the source code, not a live instance of this local Flask application.
 
-## 2. Controlled Experiments & Evaluation Rubric (Step 5.3 & Step 7.2)
+## Project structure
 
-| Experiment | Product & Verified Facts | Target Audience | Selected Tone | Word Count | Factual Accuracy | Audience Fit | Tone Score | Keyword Relevance | Unsupported Claims |
-| :--- | :--- | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Exp A1** | **TrailRunner Leather Boots** (full-grain leather, rubber outsole, padded collar, day hikes) | Hikers and outdoor enthusiasts | `casual` | 86 | 5 / 5 | 5 / 5 | 5 / 5 | 5 / 5 | 0 flagged |
-| **Exp A2** | **TrailRunner Leather Boots** (same facts kept constant) | Hikers and outdoor enthusiasts | `formal` | 65 | 5 / 5 | 5 / 5 | 5 / 5 | 5 / 5 | 0 flagged |
-| **Exp A3** | **TrailRunner Leather Boots** (same facts kept constant) | Hikers and outdoor enthusiasts | `humorous` | 72 | 5 / 5 | 5 / 5 | 5 / 5 | 5 / 5 | 0 flagged |
-| **Exp B1** | **BaristaPro Espresso Grinder** (40mm steel burrs, 30 settings, low-noise motor) | Home baristas and coffee lovers | `professionals` | 61 | 5 / 5 | 5 / 5 | 5 / 5 | 5 / 5 | 0 flagged |
-
----
-
-## 3. Application Preview
-
-![AI Product Description Generator Screenshot](screenshot.png)
-
----
-
-## 4. Project Structure
-
-```
+```text
 retail-ai/
-├── app.py                  # Flask backend, multi-provider LLM integration, validation & rubric evaluator
-├── requirements.txt        # Python dependencies (Flask, openai, requests)
-├── .env.example            # Example environment variables template
-├── .gitignore              # Excludes virtual environments and local cache
-├── README.md               # Written report, evaluation experiments, and documentation
-├── screenshot.png          # Application execution and rubric scorecard screenshot
-└── templates/
-    └── index.html          # Responsive HTML interface with tone controls and sample presets
+├── app.py                # Flask app, prompt engineering, LLM API calls, validation
+├── requirements.txt      # Python dependencies
+├── .env.example          # Example provider/model configuration; no secrets
+├── .gitignore            # Prevents committing .env and local files
+├── README.md             # Documentation and short project report
+├── screenshot.png        # Add a real screenshot after successfully running an LLM
+├── templates/
+│   └── index.html        # Input form and model-generated output
+└── tests/
+    └── test_app.py       # Automated tests with a mocked model
 ```
 
----
+## Install and run (Windows PowerShell)
 
-## 5. How to Install, Run, and Test
+1. Install Python and [Ollama](https://ollama.com/download) if you plan to use the local LLM option.
+2. In a terminal opened inside the project folder, run:
 
-```bash
-# 1. Install required dependencies
-pip install -r requirements.txt
-
-# 2. Start the Flask web application
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+Copy-Item .env.example .env
+ollama pull gemma3:1b
 python app.py
 ```
-Open **`http://127.0.0.1:5000/`** in your web browser.
+
+If PowerShell blocks environment activation, use `.\.venv\Scripts\python.exe -m pip install -r requirements.txt` and `.\.venv\Scripts\python.exe app.py` instead of activating it. Keep Ollama running. Open **http://127.0.0.1:5000/** and click **Generate Description**. An Ollama response should show a model label, for example `Ollama / gemma3:1b (real LLM)`.
+
+To use **LM Studio**, load a model, start the local server in its Developer tab, and set `LLM_PROVIDER=lmstudio` and `LMSTUDIO_MODEL=` to the model ID shown in LM Studio. To use **OpenAI**, set `LLM_PROVIDER=openai` and add your own `OPENAI_API_KEY` in `.env`; this option may have API costs. Never commit `.env`.
+
+## Run tests
+
+```powershell
+python -m pip install pytest
+python -m pytest -q
+```
+
+The automated tests mock model responses. **Passing these tests confirms app logic, not that a real LLM connection works.** Run the app with an actual model and keep a screenshot of the output to demonstrate that requirement.
+
+## Short project report (model choice, challenges, future improvements, ethics)
+
+I chose **Option C, a local language model through Ollama (Gemma 3)**, as the main approach because it avoids the need to share an API key and supports experiments with different product descriptions on my computer. The application also supports LM Studio and the optional OpenAI API. One important design challenge was separating successful AI generation from a non-AI fallback: a fixed text template can create sentences, but it does not satisfy the assignment's LLM requirement. I therefore made generation fail visibly if the selected model is unavailable. I also used prompt instructions to discourage invented product claims and checked the form inputs before sending them to the model.
+
+In a real retail store, the application could take product specifications from a catalog database, apply brand guidelines, and help staff draft versions for different customer segments. However, AI can invent claims, exaggerate benefits, or use unverified marketing language. For that reason, the current word and exact-phrase checks are only quick hints; they are **not** an automated factual accuracy rating. A human reviewer must compare each generated description with verified product data before publication. A useful next step would be integration with a trusted inventory system and a review/approval workflow.
+
+> **Review before submitting:** This report describes the intended implementation. Confirm the model you actually used and revise any statements that do not reflect what you personally tested.
+
+## Controlled experiments (fill in with your actual observations)
+
+Test the same boots product with three tones so that other inputs stay constant. Then try a different product with another audience. Do not insert invented scores or claim that the LLM was tested until you actually run it.
+
+| Experiment | Product | Audience | Tone | Observation to record after testing |
+|---|---|---|---|---|
+| A1 | TrailRunner Leather Boots | Hikers and outdoor enthusiasts | Casual | **Record actual output and one strength/weakness** |
+| A2 | TrailRunner Leather Boots | Hikers and outdoor enthusiasts | Formal | **Compare wording against A1** |
+| A3 | TrailRunner Leather Boots | Hikers and outdoor enthusiasts | Humorous | **Check whether humor stays grounded in product facts** |
+| B1 | BaristaPro Espresso Grinder | Home baristas and coffee lovers | Professionals | **Check audience fit and any unsupported claims** |
+
+**Suggested manual rubric:** score factual accuracy, audience fit, tone consistency, readability, keyword relevance, and usefulness from 1 to 5 **after reading each real output**. Explain one reason for each score. This manual rubric is separate from the on-screen keyword checks.
+
+## Screenshot
+
+After a successful run against Ollama, LM Studio, or OpenAI, take a screenshot showing the input, generated description, and model label. Save it as `screenshot.png` and upload it to the repository. Remove or replace any old screenshot showing template-only generation before submitting. The screenshot is evidence of your own run; it is not auto-generated by this repository.
+
+## Submission
+
+Required project files: `app.py`, `templates/index.html`, and the short written report in this README. The screenshot and experiments are additional supporting evidence. Submit the public GitHub repository URL through Canvas **Website URL** if that submission option is enabled.
